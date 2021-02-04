@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ro.temian.server;
+package ro.temian.servers;
 
 import ro.temian.common.UserEntity;
 import ro.temian.common.DBAccess;
@@ -16,13 +16,15 @@ import ro.temian.common.RoomEntry;
  *
  * @author Antoniu
  */
-public class ServerEntity {
+public class MainServerEntity {
     private DBAccess db;
     private ArrayList<RoomEntry> room_entries;
 
-    public ServerEntity() throws ClassNotFoundException, SQLException {
+    public MainServerEntity() throws ClassNotFoundException, SQLException {
         this.db = new DBAccess();
         this.room_entries = new ArrayList<>();
+        
+        startThreads();
     }
 
     public ArrayList<UserEntity> getUsers() throws SQLException {
@@ -55,7 +57,7 @@ public class ServerEntity {
         db.insertLog(log);
     }
     
-    public ArrayList<ServerLog> getLogs() throws SQLException {
+    public ArrayList<MainServerLog> getLogs() throws SQLException {
         return db.getLogs();
     }
     
@@ -71,5 +73,22 @@ public class ServerEntity {
     
     public void removeEntry(RoomEntry entry) {
         this.room_entries.remove(entry);
+    }
+    
+    public void startThreads() {
+        Thread t = new MainServerHandler(this);
+        t.start();
+        
+        Thread t1 = new ServerHandler(1, 4051);
+        t1.start();
+        
+        Thread t2 = new ServerHandler(2, 4052);
+        t2.start();
+        
+        Thread t3 = new ServerHandler(3, 4053);
+        t3.start();
+        
+        Thread t4 = new ServerHandler(4, 4054);
+        t4.start();
     }
 }

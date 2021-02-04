@@ -20,14 +20,14 @@ import ro.temian.common.UserEntity;
  *
  * @author Antoniu
  */
-public class ClientJFrame extends javax.swing.JFrame {
+public class AccessPanelJFrame extends javax.swing.JFrame {
     
     private ClientEntity client;
 
     /**
      * Creates new form ClientJFrame
      */
-    public ClientJFrame() throws ClassNotFoundException, SQLException {
+    public AccessPanelJFrame() throws ClassNotFoundException, SQLException {
         this.client = new ClientEntity();
         
         initComponents();
@@ -47,10 +47,13 @@ public class ClientJFrame extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
+        jTextField2 = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jLabel1.setText("RDIF:");
+
+        jTextField1.setColumns(10);
 
         jButton1.setText("Access");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -59,9 +62,13 @@ public class ClientJFrame extends javax.swing.JFrame {
             }
         });
 
+        jTextArea1.setEditable(false);
         jTextArea1.setColumns(20);
         jTextArea1.setRows(5);
         jScrollPane1.setViewportView(jTextArea1);
+
+        jTextField2.setEditable(false);
+        jTextField2.setHorizontalAlignment(javax.swing.JTextField.CENTER);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -69,14 +76,16 @@ public class ClientJFrame extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 543, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addGap(18, 18, 18)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 192, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jButton1)))
+                        .addComponent(jButton1)
+                        .addGap(18, 18, 18)
+                        .addComponent(jTextField2)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -86,7 +95,8 @@ public class ClientJFrame extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton1))
+                    .addComponent(jButton1)
+                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 255, Short.MAX_VALUE)
                 .addContainerGap())
@@ -109,47 +119,66 @@ public class ClientJFrame extends javax.swing.JFrame {
                 String response = fluxIn.readLine();
                 System.out.println(response);
                 
-                this.jTextArea1.append(response + "\n");
-                
                 if (response.contains("ACCESS GRANTED")) {
+                    this.jTextField2.setText("ACCESS GRANTED");
+                    
                     System.out.println(rfid);
                     
                     UserEntity user = client.getUserByRfid(rfid);
                     String action;
                     
                     if (response.contains("Entering")) {
+                        this.jTextArea1.append("Entering servers room\n");
+                        jTextArea1.setCaretPosition(jTextArea1.getText().length());
                         action = "Unlocking";
                     } else {
+                        this.jTextArea1.append("Exiting servers room\n");
+                        jTextArea1.setCaretPosition(jTextArea1.getText().length());
                         action = "Locking";
                     }
                     
                     if (user.isSrv_1()) {
                         this.jTextArea1.append(action + " SRV 1\n");
+                        jTextArea1.setCaretPosition(jTextArea1.getText().length());
+                        sendToServer(4051, action);
                     }
                     
                     if (user.isSrv_2()) {
                         this.jTextArea1.append(action + " SRV 2\n");
+                        jTextArea1.setCaretPosition(jTextArea1.getText().length());
+                        sendToServer(4052, action);
                     }
                     
                     if (user.isSrv_3()) {
                         this.jTextArea1.append(action + " SRV 3\n");
+                        jTextArea1.setCaretPosition(jTextArea1.getText().length());
+                        sendToServer(4053, action);
                     }
                     
                     if (user.isSrv_4()) {
                         this.jTextArea1.append(action + " SRV 4\n");
+                        jTextArea1.setCaretPosition(jTextArea1.getText().length());
+                        sendToServer(4054, action);
                     }
                 } else {
-                    
+                    this.jTextField2.setText("ACCESS DENIED");
                 }
                 
                 s.close();
             } catch (IOException | SQLException ex) {
-                Logger.getLogger(ClientJFrame.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(AccessPanelJFrame.class.getName()).log(Level.SEVERE, null, ex);
             }
             
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    public void sendToServer(int port, String message) throws IOException {
+        Socket s = new Socket("127.0.0.1", port);
+        PrintWriter fluxOut1 = new PrintWriter(new OutputStreamWriter(s.getOutputStream()),true);
+        fluxOut1.println(message);
+        s.close();
+    }
+    
     /**
      * @param args the command line arguments
      */
@@ -167,22 +196,23 @@ public class ClientJFrame extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(ClientJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(AccessPanelJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(ClientJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(AccessPanelJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(ClientJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(AccessPanelJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(ClientJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(AccessPanelJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> {
             try {
-                new ClientJFrame().setVisible(true);
+                new AccessPanelJFrame().setVisible(true);
             } catch (ClassNotFoundException | SQLException ex) {
-                Logger.getLogger(ClientJFrame.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(AccessPanelJFrame.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
     }
@@ -193,5 +223,6 @@ public class ClientJFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextField jTextField1;
+    private javax.swing.JTextField jTextField2;
     // End of variables declaration//GEN-END:variables
 }

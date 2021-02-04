@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ro.temian.server;
+package ro.temian.servers;
 
 import ro.temian.common.UserEntity;
 import java.awt.event.ActionEvent;
@@ -17,8 +17,8 @@ import javax.swing.Timer;
  *
  * @author Antoniu
  */
-public final class ServerJFrame extends javax.swing.JFrame {
-    ServerEntity server;
+public final class ControlPanelJFrame extends javax.swing.JFrame {
+    MainServerEntity server;
 
     /**
      * Creates new form ClientJFrame
@@ -27,21 +27,21 @@ public final class ServerJFrame extends javax.swing.JFrame {
      * @throws java.io.IOException
      * @throws java.lang.InterruptedException
      */
-    public ServerJFrame() throws ClassNotFoundException, SQLException, IOException, InterruptedException {
-        this.server = new ServerEntity();
+    public ControlPanelJFrame() throws ClassNotFoundException, SQLException, IOException, InterruptedException {
+        this.server = new MainServerEntity();
         
         initComponents();
-        
-        Thread t = new ServerHandler(server);
-        t.start();
   
+        startTimer();
         populateUsersList();
-        
+    }
+    
+    public void startTimer() {
         Timer timer = new Timer(1000, (ActionEvent e) -> {
             try {
                 populateLogs();
             } catch (InterruptedException | SQLException ex) {
-                Logger.getLogger(ServerJFrame.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ControlPanelJFrame.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
         
@@ -52,7 +52,7 @@ public final class ServerJFrame extends javax.swing.JFrame {
     public void populateLogs() throws InterruptedException, SQLException {
         this.jTextArea1.setText("");
         
-        for (ServerLog log: server.getLogs()){ 
+        for (MainServerLog log: server.getLogs()){ 
             this.jTextArea1.append(log.toString());
         }
     }
@@ -127,9 +127,9 @@ public final class ServerJFrame extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
+        jTextArea1.setEditable(false);
         jTextArea1.setColumns(20);
         jTextArea1.setRows(5);
-        jTextArea1.setEnabled(false);
         jScrollPane1.setViewportView(jTextArea1);
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
@@ -225,6 +225,7 @@ public final class ServerJFrame extends javax.swing.JFrame {
 
         jSrv4.setText("Srv 4");
 
+        jTextArea2.setEditable(false);
         jTextArea2.setColumns(20);
         jTextArea2.setRows(5);
         jScrollPane3.setViewportView(jTextArea2);
@@ -362,7 +363,7 @@ public final class ServerJFrame extends javax.swing.JFrame {
         try {
             refreshUsersList();
         } catch (SQLException ex) {
-            Logger.getLogger(ServerJFrame.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ControlPanelJFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jButton5ActionPerformed
 
@@ -387,7 +388,7 @@ public final class ServerJFrame extends javax.swing.JFrame {
                     this.jSrv4.setSelected(user.isSrv_4());
                 }
             } catch (SQLException ex) {
-                Logger.getLogger(ServerJFrame.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ControlPanelJFrame.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }//GEN-LAST:event_jButton3ActionPerformed
@@ -401,7 +402,7 @@ public final class ServerJFrame extends javax.swing.JFrame {
                 resetManageFormFields();
                 refreshUsersList();
             } catch (SQLException ex) {
-                Logger.getLogger(ServerJFrame.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ControlPanelJFrame.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }//GEN-LAST:event_jButton2ActionPerformed
@@ -428,7 +429,7 @@ public final class ServerJFrame extends javax.swing.JFrame {
             resetManageFormFields();
             refreshUsersList();
         } catch (SQLException ex) {
-            Logger.getLogger(ServerJFrame.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ControlPanelJFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -448,7 +449,7 @@ public final class ServerJFrame extends javax.swing.JFrame {
                 resetManageFormFields();
                 refreshUsersList();
             } catch (SQLException ex) {
-                Logger.getLogger(ServerJFrame.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ControlPanelJFrame.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }//GEN-LAST:event_jButton4ActionPerformed
@@ -470,23 +471,25 @@ public final class ServerJFrame extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(ServerJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ControlPanelJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(ServerJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ControlPanelJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(ServerJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ControlPanelJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(ServerJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ControlPanelJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> {
             try {
-                new ServerJFrame().setVisible(true);
+                new ControlPanelJFrame().setVisible(true);
             } catch (ClassNotFoundException | SQLException | IOException | InterruptedException ex) {
-                Logger.getLogger(ServerJFrame.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ControlPanelJFrame.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
     }

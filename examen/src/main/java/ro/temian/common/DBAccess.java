@@ -5,7 +5,7 @@
  */
 package ro.temian.common;
 
-import ro.temian.server.ServerLog;
+import ro.temian.servers.MainServerLog;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -65,12 +65,12 @@ public class DBAccess {
     
     public ArrayList getLogs() throws SQLException {
         Statement s = conn.createStatement();
-        ArrayList<ServerLog> logs = new ArrayList<>();
+        ArrayList<MainServerLog> logs = new ArrayList<>();
         
         ResultSet rs = s.executeQuery("SELECT * FROM LOGS");
         
         while (rs.next()) {
-            logs.add(new ServerLog(rs.getString("entry"), Long.parseLong(rs.getString("time"))));
+            logs.add(new MainServerLog(rs.getString("entry"), Long.parseLong(rs.getString("time"))));
         }
         
         return logs;

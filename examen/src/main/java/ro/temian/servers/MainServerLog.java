@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ro.temian.server;
+package ro.temian.servers;
 
 import java.sql.Timestamp;
 
@@ -11,11 +11,11 @@ import java.sql.Timestamp;
  *
  * @author Antoniu
  */
-public class ServerLog {
+public class MainServerLog {
     private final String message;
     private final long time;
 
-    public ServerLog(String message, long time) {
+    public MainServerLog(String message, long time) {
         this.message = message;
         this.time = time;
     }
